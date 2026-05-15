@@ -139,15 +139,13 @@ export default async function Home() {
       </ul>
       <details>
         <summary>
-          <div>
             {"Nombre total: " + pokemonList.length}
-          </div>
         </summary>
         <div style={{ display: "flex", gap: "5px" }}>
           {columns.map((column, colIndex) => (
             <table key={colIndex}>
               <tbody>
-                {column.map((pokemon, index) => (
+                {column.map((pokemon: string, index: number) => (
                   <tr key={index}>
                     <td>{pokemon}</td>
                   </tr>
