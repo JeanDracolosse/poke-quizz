@@ -2,23 +2,23 @@ class PokemonQueryBuilder {
     where: {
         pokemonabilities?: {
             ability?: {
-                name: {
-                    _eq: string;
+                id: {
+                    _eq: number;
                 };
             };
         };
         pokemontypes?: {
             type?: {
-                name: {
-                    _eq: string;
+                id: {
+                    _eq: number;
                 };
             };
         };
         pokemonmoves?: {
             move?: {
-                name:
+                id:
                 {
-                    _eq: string;
+                    _eq: number;
 
                 };
             };
@@ -51,8 +51,29 @@ class PokemonQueryBuilder {
         };
 
         this.fields = `
-      id
-      name
+        id
+        pokemonforms {
+          pokemonformgenerations {
+            generation_id
+          }
+          pokemonformnames {
+            language_id
+            pokemon_name
+          }
+        }
+        pokemonspecy {
+          id
+          evolutionchain {
+          pokemonspecies {
+            id
+            evolves_from_species_id
+          }
+          }
+          pokemonspeciesnames {
+            language_id
+            name
+          }
+        }
     `;
     }
 
@@ -63,24 +84,16 @@ class PokemonQueryBuilder {
             },
         };
 
-        this.fields += `
-        pokemonforms {
-            pokemonformgenerations {
-                generation_id
-            }
-        }
-        `;
-
         this.generation = generationId
 
         return this;
     }
 
-    withType(type: string) {
+    withType(typeId: number) {
         this.where.pokemontypes = {
             type: {
-                name: {
-                    _eq: type,
+                id: {
+                    _eq: typeId,
                 },
             },
         };
@@ -88,11 +101,11 @@ class PokemonQueryBuilder {
         return this;
     }
 
-    withAbility(ability: string) {
+    withAbility(abilityId: number) {
         this.where.pokemonabilities = {
             ability: {
-                name: {
-                    _eq: ability,
+                id: {
+                    _eq: abilityId,
                 },
             },
         };
@@ -100,11 +113,11 @@ class PokemonQueryBuilder {
         return this;
     }
 
-    withMove(move: string) {
+    withMove(moveId: number) {
         this.where.pokemonmoves = {
             move: {
-                name: {
-                    _eq: move,
+                id: {
+                    _eq: moveId,
                 },
             },
         };
@@ -112,25 +125,25 @@ class PokemonQueryBuilder {
         return this;
     }
 
-    withShape(shape: string) {
+    withShape(shapeId: number) {
         this.ensureSpecy();
 
         this.where.pokemonspecy.pokemonshape = {
-            name: {
-                _eq: shape,
+            id: {
+                _eq: shapeId,
             },
         };
 
         return this;
     }
 
-    withEggGroup(group: string) {
+    withEggGroup(groupId: number) {
         this.ensureSpecy();
 
         this.where.pokemonspecy.pokemonegggroups = {
             egggroup: {
-                name: {
-                    _eq: group,
+                id: {
+                    _eq: groupId,
                 },
             },
         };
@@ -138,24 +151,24 @@ class PokemonQueryBuilder {
         return this;
     }
 
-    withHabitat(habitat: string) {
+    withHabitat(habitatId: number) {
         this.ensureSpecy();
 
         this.where.pokemonspecy.pokemonhabitat = {
-            name: {
-                _eq: habitat,
+            id: {
+                _eq: habitatId,
             },
         };
 
         return this;
     }
 
-    withColor(color: string) {
+    withColor(colorId: number) {
         this.ensureSpecy();
 
         this.where.pokemonspecy.pokemoncolor = {
-            name: {
-                _eq: color,
+            id: {
+                _eq: colorId,
             },
         };
 
@@ -193,38 +206,12 @@ class PokemonQueryBuilder {
     }
 
     withEvolve(evolve: boolean) {
-        if (this.evolutionStage !== null && this.evolves !== null) {
-            this.fields += `
-                pokemonspecy {
-                    id
-                    evolutionchain {
-                    pokemonspecies {
-                        id
-                        evolves_from_species_id
-                    }
-                    }
-                }
-                `;
-        }
         this.evolves = evolve
         return this;
 
     }
 
     withEvolutionStage(evolutionStage: number) {
-        if (this.evolutionStage !== null && this.evolves !== null) {
-            this.fields += `
-                pokemonspecy {
-                    id
-                    evolutionchain {
-                    pokemonspecies {
-                        id
-                        evolves_from_species_id
-                    }
-                    }
-                }
-                `;
-        }
         this.evolutionStage = evolutionStage
         return this;
     }
@@ -264,9 +251,23 @@ class PokemonQueryBuilder {
     `;
     }
 
-    formatReponse(data: any) {
+    formatReponse(data: any, languageId: number) {
         const pokemonList = data.data.pokemon
-        var resultPokemonList = pokemonList.map((pokemon: any) => ({ id: pokemon.id, name: pokemon.name }))
+
+        var resultPokemonList = pokemonList.map((pokemon: { id: any; pokemonforms: { pokemonformnames: any[]; }[]; pokemonspecy: { pokemonspeciesnames: any[]; }; }) => {
+            const id = pokemon.id
+            var name
+            if (pokemon.pokemonforms[0].pokemonformnames.length > 0) {
+                name = pokemon.pokemonforms[0].pokemonformnames
+                    .find(pokemonform => pokemonform.language_id === languageId)
+                    .pokemon_name
+            } else {
+                name = pokemon.pokemonspecy.pokemonspeciesnames
+                    .find(pokemonspecy => pokemonspecy.language_id === languageId)
+                    .name
+            }
+            return { id, name }
+        })
 
         if (this.generation) {
             const generationPokemonIdList = pokemonList.filter(
