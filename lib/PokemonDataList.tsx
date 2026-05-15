@@ -6,7 +6,7 @@ import Papa from "papaparse";
 export function getAbilities(language_id: number) {
   const file = fs.readFileSync(path.join(process.cwd(), "data", "ability_names.csv"), "utf8");
 
-  const parsed = Papa.parse(file, {
+  const parsed = Papa.parse<any>(file, {
     header: true,
     skipEmptyLines: true
   });
@@ -22,7 +22,7 @@ export function getAbilities(language_id: number) {
 export function getEggGroups(language_id: number) {
   const file = fs.readFileSync(path.join(process.cwd(), "data", "egg_group_prose.csv"), "utf8");
 
-  const parsed = Papa.parse(file, {
+  const parsed = Papa.parse<any>(file, {
     header: true,
     skipEmptyLines: true
   });
@@ -39,7 +39,7 @@ export function getEggGroups(language_id: number) {
 export function getMoves(language_id: number) {
   const file = fs.readFileSync(path.join(process.cwd(), "data", "move_names.csv"), "utf8");
 
-  const parsed = Papa.parse(file, {
+  const parsed = Papa.parse<any>(file, {
     header: true,
     skipEmptyLines: true
   });
@@ -55,7 +55,7 @@ export function getMoves(language_id: number) {
 export function getColors(language_id: number) {
   const file = fs.readFileSync(path.join(process.cwd(), "data", "pokemon_color_names.csv"), "utf8");
 
-  const parsed = Papa.parse(file, {
+  const parsed = Papa.parse<any>(file, {
     header: true,
     skipEmptyLines: true
   });
@@ -71,7 +71,7 @@ export function getColors(language_id: number) {
 export function getHabitats(language_id: number) {
   const file = fs.readFileSync(path.join(process.cwd(), "data", "pokemon_habitat_names.csv"), "utf8");
 
-  const parsed = Papa.parse(file, {
+  const parsed = Papa.parse<any>(file, {
     header: true,
     skipEmptyLines: true
   });
@@ -87,7 +87,7 @@ export function getHabitats(language_id: number) {
 export function getTypes(language_id: number) {
   const file = fs.readFileSync(path.join(process.cwd(), "data", "type_names.csv"), "utf8");
 
-  const parsed = Papa.parse(file, {
+  const parsed = Papa.parse<any>(file, {
     header: true,
     skipEmptyLines: true
   });
@@ -103,7 +103,7 @@ export function getTypes(language_id: number) {
 export function getShapes(language_id: number) {
   const file = fs.readFileSync(path.join(process.cwd(), "data", "pokemon_shape_prose.csv"), "utf8");
 
-  const parsed = Papa.parse(file, {
+  const parsed = Papa.parse<any>(file, {
     header: true,
     skipEmptyLines: true
   });
