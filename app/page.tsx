@@ -1,6 +1,8 @@
 import { getAbilities, getColors, getEggGroups, getHabitats, getMoves, getShapes, getTypes } from "@/lib/PokemonDataList";
 import PokemonQueryBuilder from "./util/PokemonQueryBuilder"
 
+export const dynamic = "force-dynamic";
+
 const graphqlUrl = 'https://graphql.pokeapi.co/v1beta2'
 const langId = 5
 
