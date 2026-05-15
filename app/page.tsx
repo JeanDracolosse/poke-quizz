@@ -109,7 +109,7 @@ export default async function Home() {
     const evolutionStage = Math.floor(Math.random() * 3) + 1
     enigma.push({ nom: "Stade d'évolution ", value: evolutionStage })
     graphqlQueryBuilder = graphqlQueryBuilder.withEvolutionStage(evolutionStage)
-  }*/
+  }
 
   const graphqlBody = graphqlQueryBuilder.build()
 
