@@ -53,7 +53,7 @@ export default async function Home() {
   if (criteriaSubList.includes("Ability")) {
     const ability = randomElements(abilities, 1)[0]
     enigma.push({ nom: "Talent ", value: ability.name })
-    graphqlQueryBuilder = graphqlQueryBuilder.withGeneration(ability.id)
+    graphqlQueryBuilder = graphqlQueryBuilder.withAbility(ability.id)
   }
   if (criteriaSubList.includes("Type")) {
     const type = randomElements(types, 1)[0]
@@ -109,7 +109,7 @@ export default async function Home() {
     const evolutionStage = Math.floor(Math.random() * 3) + 1
     enigma.push({ nom: "Stade d'évolution ", value: evolutionStage })
     graphqlQueryBuilder = graphqlQueryBuilder.withEvolutionStage(evolutionStage)
-  }
+  }*/
 
   const graphqlBody = graphqlQueryBuilder.build()
 
@@ -123,6 +123,7 @@ export default async function Home() {
   )
 
   const posts = await data.json()
+  console.log(posts)
   const pokemonList = graphqlQueryBuilder.formatReponse(posts, langId)
 
   const columns = [];
@@ -141,7 +142,7 @@ export default async function Home() {
       </ul>
       <details>
         <summary>
-            {"Nombre total: " + pokemonList.length}
+          {"Nombre total: " + pokemonList.length}
         </summary>
         <div style={{ display: "flex", gap: "5px" }}>
           {columns.map((column, colIndex) => (
