@@ -254,9 +254,9 @@ class PokemonQueryBuilder {
     formatReponse(data: any, languageId: number) {
         const pokemonList = data.data.pokemon
 
-        var resultPokemonList = pokemonList.map((pokemon: { id: any; pokemonforms: { pokemonformnames: any[]; }[]; pokemonspecy: { pokemonspeciesnames: any[]; }; }) => {
+        let resultPokemonList = pokemonList.map((pokemon: { id: any; pokemonforms: { pokemonformnames: any[]; }[]; pokemonspecy: { pokemonspeciesnames: any[]; }; }) => {
             const id = pokemon.id
-            var name
+            let name
             if (pokemon.pokemonforms[0].pokemonformnames.length > 0) {
                 name = pokemon.pokemonforms[0].pokemonformnames
                     .find(pokemonform => pokemonform.language_id === languageId)
@@ -301,9 +301,9 @@ class PokemonQueryBuilder {
                     const pokemonId = pokemon.pokemonspecy.id
                     const pokemonspecies = pokemon.pokemonspecy.evolutionchain.pokemonspecies
 
-                    var currentPokemonIndexes = pokemonspecies.filter(pokemonChain => pokemonChain.evolves_from_species_id === null)
+                    let currentPokemonIndexes = pokemonspecies.filter(pokemonChain => pokemonChain.evolves_from_species_id === null)
                         .map((pokemonspecy: { id: any; }) => pokemonspecy.id)
-                    var currentStage = 1
+                    let currentStage = 1
 
                     while (!currentPokemonIndexes.includes(pokemonId)) {
                         currentPokemonIndexes = pokemonspecies

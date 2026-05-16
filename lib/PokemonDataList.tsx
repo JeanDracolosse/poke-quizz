@@ -16,7 +16,8 @@ export function getAbilities(language_id: number) {
     .map(row => ({
       id: row.ability_id,
       name: row.name
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function getEggGroups(language_id: number) {
@@ -32,7 +33,8 @@ export function getEggGroups(language_id: number) {
     .map(row => ({
       id: row.egg_group_id,
       name: row.name
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 
@@ -49,7 +51,8 @@ export function getMoves(language_id: number) {
     .map(row => ({
       id: row.move_id,
       name: row.name
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function getColors(language_id: number) {
@@ -65,7 +68,8 @@ export function getColors(language_id: number) {
     .map(row => ({
       id: row.pokemon_color_id,
       name: row.name
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function getHabitats(language_id: number) {
@@ -80,8 +84,9 @@ export function getHabitats(language_id: number) {
     .filter(row => row.local_language_id === language_id.toString())
     .map(row => ({
       id: row.pokemon_habitat_id,
-      name: row.name
-    }));
+      name: row.name.charAt(0).toUpperCase() + row.name.slice(1)
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function getTypes(language_id: number) {
@@ -97,7 +102,8 @@ export function getTypes(language_id: number) {
     .map(row => ({
       id: row.type_id,
       name: row.name
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export function getShapes(language_id: number) {
@@ -113,5 +119,6 @@ export function getShapes(language_id: number) {
     .map(row => ({
       id: row.pokemon_shape_id,
       name: row.name
-    }));
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

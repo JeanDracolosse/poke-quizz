@@ -32,7 +32,7 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
     const [pokemonList, setPokemonList] = useState([]);
 
     async function handleSearch() {
-        var graphqlQueryBuilder: PokemonQueryBuilder = new PokemonQueryBuilder()
+        let graphqlQueryBuilder: PokemonQueryBuilder = new PokemonQueryBuilder()
         if (selectedGeneration) {
             graphqlQueryBuilder = graphqlQueryBuilder.withGeneration(parseInt(selectedGeneration))
         }
@@ -174,7 +174,7 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                 value={selectedEggGroup}
                 onChange={(e) => setSelectedEggGroup(e.target.value)} >
                 <option value="">
-                    --Groupe d'oeuf--
+                    --Groupe d&apos;oeuf--
                 </option>
 
                 {eggGroups.map((eggGroup: { id: string, name: string }) => (
@@ -239,7 +239,7 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                 value={selectedEvolutionStage}
                 onChange={(e) => setSelectedEvolutionStage(e.target.value)} >
                 <option value="">
-                    --Stade d'évolution--
+                    --Stade d&apos;évolution--
                 </option>
 
                 {Array.from({ length: 3 }, (_, n) => n + 1).map(evolutionStage => (
