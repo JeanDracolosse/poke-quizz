@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import PokemonQueryBuilder from "../util/PokemonQueryBuilder";
-import { GRAPHQL_URL, LANG_ID } from "../Constants";
+import { CHUNK_SIZE, GRAPHQL_URL, LANG_ID } from "../Constants";
+import { Select, Table, Button, Spoiler } from '@mantine/core';
+
 
 export type Props = {
     abilities: { id: string, name: string }[];
@@ -15,21 +17,23 @@ export type Props = {
 };
 
 export default function CriteriaSelects({ abilities, types, moves, shapes, eggGroups, habitats, colors }: Props) {
-    const [selectedGeneration, setSelectedGeneration] = useState<string | undefined>(undefined);
-    const [selectedAbility, setSelectedAbility] = useState<string | undefined>(undefined);
-    const [selectedType, setSelectedType] = useState<string | undefined>(undefined);
-    const [selectedMove, setSelectedMove] = useState<string | undefined>(undefined);
-    const [selectedShape, setSelectedShape] = useState<string | undefined>(undefined);
-    const [selectedEggGroup, setSelectedEggGroup] = useState<string | undefined>(undefined);
-    const [selectedHabitat, setSelectedHabitat] = useState<string | undefined>(undefined);
-    const [selectedColor, setSelectedColor] = useState<string | undefined>(undefined);
-    const [selectedEvolutionStage, setSelectedEvolutionStage] = useState<string | undefined>(undefined);
-    const [selectedBaby, setSelectedBaby] = useState<string | undefined>(undefined);
-    const [selectedLegendary, setSelectedLegendary] = useState<string | undefined>(undefined);
-    const [selectedMythical, setSelectedMythical] = useState<string | undefined>(undefined);
-    const [selectedEvolve, setSelectedEvolve] = useState<string | undefined>(undefined);
+    const [expanded, setExpanded] = useState(false);
 
-    const [pokemonList, setPokemonList] = useState([]);
+    const [selectedGeneration, setSelectedGeneration] = useState<string | null>(null);
+    const [selectedAbility, setSelectedAbility] = useState<string | null>(null);
+    const [selectedType, setSelectedType] = useState<string | null>(null);
+    const [selectedMove, setSelectedMove] = useState<string | null>(null);
+    const [selectedShape, setSelectedShape] = useState<string | null>(null);
+    const [selectedEggGroup, setSelectedEggGroup] = useState<string | null>(null);
+    const [selectedHabitat, setSelectedHabitat] = useState<string | null>(null);
+    const [selectedColor, setSelectedColor] = useState<string | null>(null);
+    const [selectedEvolutionStage, setSelectedEvolutionStage] = useState<string | null>(null);
+    const [selectedBaby, setSelectedBaby] = useState<string | null>(null);
+    const [selectedLegendary, setSelectedLegendary] = useState<string | null>(null);
+    const [selectedMythical, setSelectedMythical] = useState<string | null>(null);
+    const [selectedEvolve, setSelectedEvolve] = useState<string | null>(null);
+
+    const [pokemonList, setPokemonList] = useState<[string][]>([]);
 
     async function handleSearch() {
         let graphqlQueryBuilder: PokemonQueryBuilder = new PokemonQueryBuilder()
@@ -70,7 +74,7 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
             graphqlQueryBuilder = graphqlQueryBuilder.withMythical(selectedMythical === "1")
         }
         if (selectedEvolve) {
-            graphqlQueryBuilder = graphqlQueryBuilder.withEvolve(selectedEvolve === "1")
+            graphqlQueryBuilder = graphqlQueryBuilder.withEvolve(selectedEvolve !== "1")
         }
 
         const graphqlBody = graphqlQueryBuilder.build()
@@ -85,250 +89,184 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
         )
 
         const posts = await data.json()
-        setPokemonList(graphqlQueryBuilder.formatReponse(posts, LANG_ID))
+
+        const pokemonFullList = graphqlQueryBuilder.formatReponse(posts, LANG_ID)
+        const columns = [];
+        for (let i = 0; i < pokemonFullList.length; i += CHUNK_SIZE) {
+            columns.push(pokemonFullList.slice(i, i + CHUNK_SIZE));
+        }
+        setPokemonList(columns)
     }
 
     return (
         <div>
-            <select
+            <Select
+                label="Génération"
+                placeholder="Sélectionner une valeur"
+                data={Array.from({ length: 9 }, (_, n) => n + 1).map(generation => ({
+                    value: generation.toString(),
+                    label: generation.toString()
+                }))}
                 value={selectedGeneration}
-                onChange={(e) => setSelectedGeneration(e.target.value)} >
-                <option value="">
-                    --Génération--
-                </option>
-
-                {Array.from({ length: 9 }, (_, n) => n + 1).map(generation => (
-                    <option
-                        key={generation}
-                        value={generation}
-                    >
-                        {generation}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedGeneration}
+                allowDeselect
+            />
+            <Select
+                label="Talent"
+                placeholder="Sélectionner une valeur"
+                data={abilities.map(a => ({
+                    value: a.id,
+                    label: a.name
+                }))}
                 value={selectedAbility}
-                onChange={(e) => setSelectedAbility(e.target.value)} >
-                <option value="">
-                    --Talent--
-                </option>
-
-                {abilities.map((ability: { id: string, name: string }) => (
-                    <option
-                        key={ability.id}
-                        value={ability.id}
-                    >
-                        {ability.name}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedAbility}
+                allowDeselect
+            />
+            <Select
+                label="Type"
+                placeholder="Sélectionner une valeur"
+                data={types.map(a => ({
+                    value: a.id,
+                    label: a.name
+                }))}
                 value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)} >
-                <option value="">
-                    --Type--
-                </option>
-
-                {types.map((typeEntry: { id: string, name: string }) => (
-                    <option
-                        key={typeEntry.id}
-                        value={typeEntry.id}
-                    >
-                        {typeEntry.name}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedType}
+                allowDeselect
+            />
+            <Select
+                label="Attaque"
+                placeholder="Sélectionner une valeur"
+                data={moves.map(a => ({
+                    value: a.id,
+                    label: a.name
+                }))}
                 value={selectedMove}
-                onChange={(e) => setSelectedMove(e.target.value)} >
-                <option value="">
-                    --Attaque--
-                </option>
-
-                {moves.map((move: { id: string, name: string }) => (
-                    <option
-                        key={move.id}
-                        value={move.id}
-                    >
-                        {move.name}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedMove}
+                allowDeselect
+            />
+            <Select
+                label="Forme"
+                placeholder="Sélectionner une valeur"
+                data={shapes.map(a => ({
+                    value: a.id,
+                    label: a.name
+                }))}
                 value={selectedShape}
-                onChange={(e) => setSelectedShape(e.target.value)} >
-                <option value="">
-                    --Forme--
-                </option>
-
-                {shapes.map((shape: { id: string, name: string }) => (
-                    <option
-                        key={shape.id}
-                        value={shape.id}
-                    >
-                        {shape.name}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedShape}
+                allowDeselect
+            />
+            <Select
+                label="Groupe d'oeuf"
+                placeholder="Sélectionner une valeur"
+                data={eggGroups.map(a => ({
+                    value: a.id,
+                    label: a.name
+                }))}
                 value={selectedEggGroup}
-                onChange={(e) => setSelectedEggGroup(e.target.value)} >
-                <option value="">
-                    --Groupe d&apos;oeuf--
-                </option>
-
-                {eggGroups.map((eggGroup: { id: string, name: string }) => (
-                    <option
-                        key={eggGroup.id}
-                        value={eggGroup.id}
-                    >
-                        {eggGroup.name}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedEggGroup}
+                allowDeselect
+            />
+            <Select
+                label="Habitat"
+                placeholder="Sélectionner une valeur"
+                data={habitats.map(a => ({
+                    value: a.id,
+                    label: a.name
+                }))}
                 value={selectedHabitat}
-                onChange={(e) => setSelectedHabitat(e.target.value)} >
-                <option value="">
-                    --Habitat--
-                </option>
-
-                {habitats.map((habitat: { id: string, name: string }) => (
-                    <option
-                        key={habitat.id}
-                        value={habitat.id}
-                    >
-                        {habitat.name}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedHabitat}
+                allowDeselect
+            />
+            <Select
+                label="Couleur"
+                placeholder="Sélectionner une valeur"
+                data={colors.map(a => ({
+                    value: a.id,
+                    label: a.name
+                }))}
                 value={selectedColor}
-                onChange={(e) => setSelectedColor(e.target.value)} >
-                <option value="">
-                    --Couleur--
-                </option>
-
-                {colors.map((color: { id: string, name: string }) => (
-                    <option
-                        key={color.id}
-                        value={color.id}
-                    >
-                        {color.name}
-                    </option>
-                ))}
-            </select>
-            <select
-                value={selectedGeneration}
-                onChange={(e) => setSelectedGeneration(e.target.value)} >
-                <option value="">
-                    --Génération--
-                </option>
-
-                {Array.from({ length: 9 }, (_, n) => n + 1).map(generation => (
-                    <option
-                        key={generation}
-                        value={generation}
-                    >
-                        {generation}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedColor}
+                allowDeselect
+            />
+            <Select
+                label="Stade d'évolution"
+                placeholder="Sélectionner une valeur"
+                data={Array.from({ length: 3 }, (_, n) => n + 1).map(evolutionStage => ({
+                    value: evolutionStage.toString(),
+                    label: evolutionStage.toString()
+                }))}
                 value={selectedEvolutionStage}
-                onChange={(e) => setSelectedEvolutionStage(e.target.value)} >
-                <option value="">
-                    --Stade d&apos;évolution--
-                </option>
-
-                {Array.from({ length: 3 }, (_, n) => n + 1).map(evolutionStage => (
-                    <option
-                        key={evolutionStage}
-                        value={evolutionStage}
-                    >
-                        {evolutionStage}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedEvolutionStage}
+                allowDeselect
+            />
+            <Select
+                label="Bébé"
+                placeholder="Sélectionner une valeur"
+                data={Array.from({ length: 2 }, (_, n) => n + 1).map(baby => ({
+                    value: baby.toString(),
+                    label: baby === 1 ? "Oui" : "Non"
+                }))}
                 value={selectedBaby}
-                onChange={(e) => setSelectedBaby(e.target.value)} >
-                <option value="">
-                    --Bébé--
-                </option>
-
-                {Array.from({ length: 2 }, (_, n) => n + 1).map(baby => (
-                    <option
-                        key={baby}
-                        value={baby}
-                    >
-                        {baby === 1 ? "Oui" : "Non"}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedBaby}
+                allowDeselect
+            />
+            <Select
+                label="Fabuleux"
+                placeholder="Sélectionner une valeur"
+                data={Array.from({ length: 2 }, (_, n) => n + 1).map(mythical => ({
+                    value: mythical.toString(),
+                    label: mythical === 1 ? "Oui" : "Non"
+                }))}
                 value={selectedMythical}
-                onChange={(e) => setSelectedMythical(e.target.value)} >
-                <option value="">
-                    --Fabuleux--
-                </option>
-
-                {Array.from({ length: 2 }, (_, n) => n + 1).map(mythical => (
-                    <option
-                        key={mythical}
-                        value={mythical}
-                    >
-                        {mythical === 1 ? "Oui" : "Non"}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedMythical}
+                allowDeselect
+            />
+            <Select
+                label="Légendaire"
+                placeholder="Sélectionner une valeur"
+                data={Array.from({ length: 2 }, (_, n) => n + 1).map(legendary => ({
+                    value: legendary.toString(),
+                    label: legendary === 1 ? "Oui" : "Non"
+                }))}
                 value={selectedLegendary}
-                onChange={(e) => setSelectedLegendary(e.target.value)} >
-                <option value="">
-                    --Légendaire--
-                </option>
-
-                {Array.from({ length: 2 }, (_, n) => n + 1).map(legendary => (
-                    <option
-                        key={legendary}
-                        value={legendary}
-                    >
-                        {legendary === 1 ? "Oui" : "Non"}
-                    </option>
-                ))}
-            </select>
-            <select
+                onChange={setSelectedLegendary}
+                allowDeselect
+            />
+            <Select
+                label="Stade final"
+                placeholder="Sélectionner une valeur"
+                data={Array.from({ length: 2 }, (_, n) => n + 1).map(evolve => ({
+                    value: evolve.toString(),
+                    label: evolve === 1 ? "Oui" : "Non"
+                }))}
                 value={selectedEvolve}
-                onChange={(e) => setSelectedEvolve(e.target.value)} >
-                <option value="">
-                    --Stade final--
-                </option>
-
-                {Array.from({ length: 2 }, (_, n) => n + 1).map(evolve => (
-                    <option
-                        key={evolve}
-                        value={evolve}
-                    >
-                        {evolve === 1 ? "Oui" : "Non"}
-                    </option>
-                ))}
-            </select>
-            <button onClick={handleSearch}>
-                Rechercher
-            </button>
-            <details>
-                <summary>
-                    {"Nombre total: " + pokemonList.length}
-                </summary>
-                <ul>
-                    {pokemonList.map((pokemon) => (
-                        <li key={pokemon}>
-                            {pokemon}
-                        </li>
-                    ))}
-                </ul>
-            </details>
+                onChange={setSelectedEvolve}
+                allowDeselect
+            />
+            <Button onClick={handleSearch}>
+                C'est parti !
+            </Button>
+            {"Nombre total: " + pokemonList.reduce((acc, row) => acc + row.length, 0)}
+            <Spoiler
+                maxHeight={0}
+                showLabel="Dévoiler la liste"
+                hideLabel="Cacher la liste"
+                expanded={expanded}
+                onExpandedChange={setExpanded}>
+                <div>
+                    <Table>
+                        <Table.Tbody>
+                            {pokemonList.map((pokemon, i) => (
+                                <Table.Tr key={i}>
+                                    {pokemon.map((cell, j) => (
+                                        <Table.Td key={j}>{cell}</Table.Td>
+                                    ))}
+                                </Table.Tr>
+                            ))}
+                        </Table.Tbody>
+                    </Table>
+                </div>
+            </Spoiler >
         </div>
     );
 }
