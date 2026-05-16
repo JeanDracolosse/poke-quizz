@@ -3,7 +3,7 @@
 import { useState } from "react";
 import PokemonQueryBuilder from "../util/PokemonQueryBuilder";
 import { CHUNK_SIZE, GRAPHQL_URL, LANG_ID } from "../Constants";
-import { Select, Table, Button, Spoiler } from '@mantine/core';
+import { Select, Table, Button, Spoiler, Container, Box, Grid, Title, Flex, Center } from '@mantine/core';
 
 
 export type Props = {
@@ -18,6 +18,7 @@ export type Props = {
 
 export default function CriteriaSelects({ abilities, types, moves, shapes, eggGroups, habitats, colors }: Props) {
     const [expanded, setExpanded] = useState(false);
+    const [numberOfPokemon, setNumberOfPokemon] = useState<number | null>(null);
 
     const [selectedGeneration, setSelectedGeneration] = useState<string | null>(null);
     const [selectedAbility, setSelectedAbility] = useState<string | null>(null);
@@ -91,6 +92,7 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
         const posts = await data.json()
 
         const pokemonFullList = graphqlQueryBuilder.formatReponse(posts, LANG_ID)
+        setNumberOfPokemon(pokemonFullList.length)
         const columns = [];
         for (let i = 0; i < pokemonFullList.length; i += CHUNK_SIZE) {
             columns.push(pokemonFullList.slice(i, i + CHUNK_SIZE));
@@ -99,174 +101,216 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
     }
 
     return (
-        <div>
-            <Select
-                label="Génération"
-                placeholder="Sélectionner une valeur"
-                data={Array.from({ length: 9 }, (_, n) => n + 1).map(generation => ({
-                    value: generation.toString(),
-                    label: generation.toString()
-                }))}
-                value={selectedGeneration}
-                onChange={setSelectedGeneration}
-                allowDeselect
-            />
-            <Select
-                label="Talent"
-                placeholder="Sélectionner une valeur"
-                data={abilities.map(a => ({
-                    value: a.id,
-                    label: a.name
-                }))}
-                value={selectedAbility}
-                onChange={setSelectedAbility}
-                allowDeselect
-            />
-            <Select
-                label="Type"
-                placeholder="Sélectionner une valeur"
-                data={types.map(a => ({
-                    value: a.id,
-                    label: a.name
-                }))}
-                value={selectedType}
-                onChange={setSelectedType}
-                allowDeselect
-            />
-            <Select
-                label="Attaque"
-                placeholder="Sélectionner une valeur"
-                data={moves.map(a => ({
-                    value: a.id,
-                    label: a.name
-                }))}
-                value={selectedMove}
-                onChange={setSelectedMove}
-                allowDeselect
-            />
-            <Select
-                label="Forme"
-                placeholder="Sélectionner une valeur"
-                data={shapes.map(a => ({
-                    value: a.id,
-                    label: a.name
-                }))}
-                value={selectedShape}
-                onChange={setSelectedShape}
-                allowDeselect
-            />
-            <Select
-                label="Groupe d'oeuf"
-                placeholder="Sélectionner une valeur"
-                data={eggGroups.map(a => ({
-                    value: a.id,
-                    label: a.name
-                }))}
-                value={selectedEggGroup}
-                onChange={setSelectedEggGroup}
-                allowDeselect
-            />
-            <Select
-                label="Habitat"
-                placeholder="Sélectionner une valeur"
-                data={habitats.map(a => ({
-                    value: a.id,
-                    label: a.name
-                }))}
-                value={selectedHabitat}
-                onChange={setSelectedHabitat}
-                allowDeselect
-            />
-            <Select
-                label="Couleur"
-                placeholder="Sélectionner une valeur"
-                data={colors.map(a => ({
-                    value: a.id,
-                    label: a.name
-                }))}
-                value={selectedColor}
-                onChange={setSelectedColor}
-                allowDeselect
-            />
-            <Select
-                label="Stade d'évolution"
-                placeholder="Sélectionner une valeur"
-                data={Array.from({ length: 3 }, (_, n) => n + 1).map(evolutionStage => ({
-                    value: evolutionStage.toString(),
-                    label: evolutionStage.toString()
-                }))}
-                value={selectedEvolutionStage}
-                onChange={setSelectedEvolutionStage}
-                allowDeselect
-            />
-            <Select
-                label="Bébé"
-                placeholder="Sélectionner une valeur"
-                data={Array.from({ length: 2 }, (_, n) => n + 1).map(baby => ({
-                    value: baby.toString(),
-                    label: baby === 1 ? "Oui" : "Non"
-                }))}
-                value={selectedBaby}
-                onChange={setSelectedBaby}
-                allowDeselect
-            />
-            <Select
-                label="Fabuleux"
-                placeholder="Sélectionner une valeur"
-                data={Array.from({ length: 2 }, (_, n) => n + 1).map(mythical => ({
-                    value: mythical.toString(),
-                    label: mythical === 1 ? "Oui" : "Non"
-                }))}
-                value={selectedMythical}
-                onChange={setSelectedMythical}
-                allowDeselect
-            />
-            <Select
-                label="Légendaire"
-                placeholder="Sélectionner une valeur"
-                data={Array.from({ length: 2 }, (_, n) => n + 1).map(legendary => ({
-                    value: legendary.toString(),
-                    label: legendary === 1 ? "Oui" : "Non"
-                }))}
-                value={selectedLegendary}
-                onChange={setSelectedLegendary}
-                allowDeselect
-            />
-            <Select
-                label="Stade final"
-                placeholder="Sélectionner une valeur"
-                data={Array.from({ length: 2 }, (_, n) => n + 1).map(evolve => ({
-                    value: evolve.toString(),
-                    label: evolve === 1 ? "Oui" : "Non"
-                }))}
-                value={selectedEvolve}
-                onChange={setSelectedEvolve}
-                allowDeselect
-            />
-            <Button onClick={handleSearch}>
-                C'est parti !
-            </Button>
-            {"Nombre total: " + pokemonList.reduce((acc, row) => acc + row.length, 0)}
-            <Spoiler
-                maxHeight={0}
-                showLabel="Dévoiler la liste"
-                hideLabel="Cacher la liste"
-                expanded={expanded}
-                onExpandedChange={setExpanded}>
-                <div>
-                    <Table>
-                        <Table.Tbody>
-                            {pokemonList.map((pokemon, i) => (
-                                <Table.Tr key={i}>
-                                    {pokemon.map((cell, j) => (
-                                        <Table.Td key={j}>{cell}</Table.Td>
-                                    ))}
-                                </Table.Tr>
-                            ))}
-                        </Table.Tbody>
-                    </Table>
-                </div>
-            </Spoiler >
-        </div>
+        <Grid gap="md" rowGap="xl" columnGap="sm">
+            <Grid.Col span={12}>
+                <Title order={3}>Critères stratégiques</Title>
+
+                <Select
+                    label="Type"
+                    placeholder="Sélectionner une valeur"
+                    data={types.map(a => ({
+                        value: a.id,
+                        label: a.name
+                    }))}
+                    value={selectedType}
+                    onChange={setSelectedType}
+                    allowDeselect
+                />
+                <Select
+                    label="Talent"
+                    placeholder="Sélectionner une valeur"
+                    data={abilities.map(a => ({
+                        value: a.id,
+                        label: a.name
+                    }))}
+                    value={selectedAbility}
+                    onChange={setSelectedAbility}
+                    allowDeselect
+                />
+                <Select
+                    label="Attaque"
+                    placeholder="Sélectionner une valeur"
+                    data={moves.map(a => ({
+                        value: a.id,
+                        label: a.name
+                    }))}
+                    value={selectedMove}
+                    onChange={setSelectedMove}
+                    allowDeselect
+                />
+            </Grid.Col>
+
+            <Grid.Col span={12}>
+                <Title order={3}>Évolutions</Title>
+
+                <Select
+                    label="Stade d'évolution"
+                    placeholder="Sélectionner une valeur"
+                    data={Array.from({ length: 3 }, (_, n) => n + 1).map(evolutionStage => ({
+                        value: evolutionStage.toString(),
+                        label: evolutionStage.toString()
+                    }))}
+                    value={selectedEvolutionStage}
+                    onChange={setSelectedEvolutionStage}
+                    allowDeselect
+                />
+                <Select
+                    label="Stade final"
+                    placeholder="Sélectionner une valeur"
+                    data={Array.from({ length: 2 }, (_, n) => n + 1).map(evolve => ({
+                        value: evolve.toString(),
+                        label: evolve === 1 ? "Oui" : "Non"
+                    }))}
+                    value={selectedEvolve}
+                    onChange={setSelectedEvolve}
+                    allowDeselect
+                />
+            </Grid.Col>
+
+
+            <Grid.Col span={12}>
+                <Title order={3}>Génération</Title>
+
+                <Select
+                    label="Génération"
+                    placeholder="Sélectionner une valeur"
+                    data={Array.from({ length: 9 }, (_, n) => n + 1).map(generation => ({
+                        value: generation.toString(),
+                        label: generation.toString()
+                    }))}
+                    value={selectedGeneration}
+                    onChange={setSelectedGeneration}
+                    allowDeselect
+                />
+            </Grid.Col>
+            <Grid.Col span={12}>
+                <Title order={3}>Pokémons particuliers</Title>
+
+                <Select
+                    label="Bébé"
+                    placeholder="Sélectionner une valeur"
+                    data={Array.from({ length: 2 }, (_, n) => n + 1).map(baby => ({
+                        value: baby.toString(),
+                        label: baby === 1 ? "Oui" : "Non"
+                    }))}
+                    value={selectedBaby}
+                    onChange={setSelectedBaby}
+                    allowDeselect
+                />
+                <Select
+                    label="Fabuleux"
+                    placeholder="Sélectionner une valeur"
+                    data={Array.from({ length: 2 }, (_, n) => n + 1).map(mythical => ({
+                        value: mythical.toString(),
+                        label: mythical === 1 ? "Oui" : "Non"
+                    }))}
+                    value={selectedMythical}
+                    onChange={setSelectedMythical}
+                    allowDeselect
+                />
+                <Select
+                    label="Légendaire"
+                    placeholder="Sélectionner une valeur"
+                    data={Array.from({ length: 2 }, (_, n) => n + 1).map(legendary => ({
+                        value: legendary.toString(),
+                        label: legendary === 1 ? "Oui" : "Non"
+                    }))}
+                    value={selectedLegendary}
+                    onChange={setSelectedLegendary}
+                    allowDeselect
+                />
+            </Grid.Col>
+            <Grid.Col span={12}>
+                <Title order={3}>Critères du Pokédex</Title>
+                <Select
+                    label="Forme"
+                    placeholder="Sélectionner une valeur"
+                    data={shapes.map(a => ({
+                        value: a.id,
+                        label: a.name
+                    }))}
+                    value={selectedShape}
+                    onChange={setSelectedShape}
+                    allowDeselect
+                />
+                <Select
+                    label="Groupe d'oeuf"
+                    placeholder="Sélectionner une valeur"
+                    data={eggGroups.map(a => ({
+                        value: a.id,
+                        label: a.name
+                    }))}
+                    value={selectedEggGroup}
+                    onChange={setSelectedEggGroup}
+                    allowDeselect
+                />
+                <Select
+                    label="Habitat"
+                    placeholder="Sélectionner une valeur"
+                    data={habitats.map(a => ({
+                        value: a.id,
+                        label: a.name
+                    }))}
+                    value={selectedHabitat}
+                    onChange={setSelectedHabitat}
+                    allowDeselect
+                />
+                <Select
+                    label="Couleur"
+                    placeholder="Sélectionner une valeur"
+                    data={colors.map(a => ({
+                        value: a.id,
+                        label: a.name
+                    }))}
+                    value={selectedColor}
+                    onChange={setSelectedColor}
+                    allowDeselect
+                />
+            </Grid.Col>
+            <Grid.Col span={12}>
+                <Flex gap="xl"
+                    justify="flex-start"
+                    align="center">
+                    <Button onClick={handleSearch}>
+                        C'est parti !
+                    </Button>
+                    <Title order={4} className={numberOfPokemon === null ? "hidden" : "block"}>
+                        {"Nombre total: " + numberOfPokemon}
+                    </Title>
+                </Flex>
+
+            </Grid.Col>
+            <Grid.Col span={12}>
+                <Flex
+                    justify="center"
+                    align="center"
+                    direction="column"
+                    gap="xl">
+                    <Spoiler
+                        maxHeight={0}
+                        showLabel="Dévoiler la liste"
+                        hideLabel="Cacher la liste"
+                        expanded={expanded}
+                        onExpandedChange={setExpanded}>
+                        <div>
+                            <Table.ScrollContainer minWidth={500}>
+                                <Table>
+                                    <Table.Tbody>
+                                        {pokemonList.map((pokemon, i) => (
+                                            <Table.Tr key={i}>
+                                                {pokemon.map((cell, j) => (
+                                                    <Table.Td key={j}>{cell}</Table.Td>
+                                                ))}
+                                            </Table.Tr>
+                                        ))}
+                                    </Table.Tbody>
+                                </Table>
+                            </Table.ScrollContainer>
+                        </div>
+                    </Spoiler >
+                </Flex>
+            </Grid.Col>
+        </Grid >
+
     );
 }
