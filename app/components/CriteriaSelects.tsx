@@ -202,7 +202,6 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                     </option>
                 ))}
             </select>
-
             <select
                 value={selectedColor}
                 onChange={(e) => setSelectedColor(e.target.value)} >
@@ -251,7 +250,6 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                     </option>
                 ))}
             </select>
-
             <select
                 value={selectedBaby}
                 onChange={(e) => setSelectedBaby(e.target.value)} >
@@ -268,7 +266,6 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                     </option>
                 ))}
             </select>
-
             <select
                 value={selectedMythical}
                 onChange={(e) => setSelectedMythical(e.target.value)} >
@@ -285,7 +282,6 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                     </option>
                 ))}
             </select>
-
             <select
                 value={selectedLegendary}
                 onChange={(e) => setSelectedLegendary(e.target.value)} >
@@ -302,7 +298,6 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                     </option>
                 ))}
             </select>
-
             <select
                 value={selectedEvolve}
                 onChange={(e) => setSelectedEvolve(e.target.value)} >
@@ -319,18 +314,21 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
                     </option>
                 ))}
             </select>
-
             <button onClick={handleSearch}>
                 Rechercher
             </button>
-
-            <ul>
-                {pokemonList.map((pokemon) => (
-                    <li key={pokemon}>
-                        {pokemon}
-                    </li>
-                ))}
-            </ul>
+            <details>
+                <summary>
+                    {"Nombre total: " + pokemonList.length}
+                </summary>
+                <ul>
+                    {pokemonList.map((pokemon) => (
+                        <li key={pokemon}>
+                            {pokemon}
+                        </li>
+                    ))}
+                </ul>
+            </details>
         </div>
     );
 }
