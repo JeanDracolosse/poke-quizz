@@ -37,6 +37,7 @@ export default function CriteriaSelects({ abilities, types, moves, shapes, eggGr
     const [pokemonList, setPokemonList] = useState<[string][]>([]);
 
     async function handleSearch() {
+        setExpanded(false)
         let graphqlQueryBuilder: PokemonQueryBuilder = new PokemonQueryBuilder()
         if (selectedGeneration) {
             graphqlQueryBuilder = graphqlQueryBuilder.withGeneration(parseInt(selectedGeneration))
